@@ -62,7 +62,7 @@ def scrape_image():
 #print(scrape_image())
 
 
-# In[5]:
+# In[16]:
 
 
 # Scrape Mars Facts Table
@@ -74,12 +74,18 @@ including Diameter, Mass, etc."""
 # Use Pandas to convert the data to a HTML table string.
 def scrape_facts():
     url = 'https://galaxyfacts-mars.com'
-    table = pd.read_html(url)
-    return table
+    table_pandas = pd.read_html(url)[0]
+    table_pandas = table_pandas.iloc[1:]
+    table_pandas.columns = ['Description', 'Mars', 'Earth']
+    table_pandas = table_pandas.set_index('Description')
+
+    table_pandas = table_pandas.to_html()
+    return table_pandas
+
 #print(scrape_facts())
 
 
-# In[6]:
+# In[ ]:
 
 
 ## Scrape Mars Hemisphere Images
@@ -115,7 +121,8 @@ def scrape_hemispheres():
         html = browser.html
         soup_2 = bs(html, 'html.parser')
         links = [a['href'] for a in soup_2.find_all('a', href=True)]
-        image_url = links[4]
+        image_url = links[3]
+        print(image_url)
         full_url = url + "/" + image_url
         clean_url = url[:28]
         final_urls = clean_url + image_url
@@ -134,15 +141,14 @@ def scrape_hemispheres():
 #print(scrape_hemispheres())
 
 
-# In[7]:
+# In[ ]:
 
 
 # Bring everything together into one dictionary
 
-
+mars_data = {}
 
 def scrape():
-    mars_data = {}
     news = scrape_news()
     featured_image = scrape_image()
     facts = scrape_facts()
